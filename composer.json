@@ -1,0 +1,18 @@
+{
+    "name": "leifermendez/laravel-policia-hotel",
+    "description": "Enviarte parte y documentacion a webpol hotel",
+    "authors": [
+        {
+            "name": "Leifer Mendez",
+            "email": "leifer33@gmail.com"
+        }
+    ],
+    "require": {
+        "anlutro/curl": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "leifermendez\\police\\": "src/"
+        }
+    }
+}

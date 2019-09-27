@@ -1,0 +1,28 @@
+{
+    "name": "anlutro/curl",
+    "description": "Simple OOP cURL wrapper.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andreas Lutro",
+            "email": "anlutro@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "4.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "anlutro\\cURL\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist" 
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

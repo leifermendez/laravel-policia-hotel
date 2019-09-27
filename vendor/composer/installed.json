@@ -1,0 +1,44 @@
+[
+    {
+        "name": "anlutro/curl",
+        "version": "1.4.7",
+        "version_normalized": "1.4.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/anlutro/php-curl.git",
+            "reference": "a2809a2a64cacf83fa7b9e5365b7613635049ef6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/anlutro/php-curl/zipball/a2809a2a64cacf83fa7b9e5365b7613635049ef6",
+            "reference": "a2809a2a64cacf83fa7b9e5365b7613635049ef6",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "0.9.*",
+            "phpunit/phpunit": "4.*"
+        },
+        "time": "2018-12-14T08:59:18+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "anlutro\\cURL\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Andreas Lutro",
+                "email": "anlutro@gmail.com"
+            }
+        ],
+        "description": "Simple OOP cURL wrapper."
+    }
+]
