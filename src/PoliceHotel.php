@@ -11,7 +11,7 @@ class PoliceHotel
     protected $pkgoptions = array(
         'countries' => array(),
         'user' => array(),
-        'pdf' => ''
+        'pdf' => array(),
     );
 
     public function __construct($user, $pass)
@@ -362,7 +362,7 @@ class PoliceHotel
 
             foreach ($countries as $country) {
                 preg_match_all('/[A-Za-z0-9]+/i', $country, $tmp);
-                if($tmp && count($tmp) && (count($tmp[0])>1)){
+                if ($tmp && count($tmp) && (count($tmp[0]) > 1)) {
                     $new_countries[] = [
                         'id' => $tmp[0][0],
                         'name' => $tmp[0][1]
@@ -532,7 +532,9 @@ class PoliceHotel
                 throw new \Exception('error.pdf.link');
             }
 
-            return $response;
+            return array(
+                'file' => $options['file_path']
+            );
 
         } catch (\Exception $e) {
             return $e->getMessage();

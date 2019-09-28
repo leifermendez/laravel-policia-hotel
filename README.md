@@ -17,16 +17,31 @@ composer require leifermendez/laravel-policia-hotel
 | pdf($options)       |  file            | Obtener PDF de alta de parte                                  |
 
 
-### Inicio
+### Laravel 5.* Integración
+
+Add the service provider to your `config/app.php` file:
 
 ```php
 
-    use \leifermendez\police\PoliceHotel;
-    
-    $user = 'USUARIO_POLICA';
-    $pass = 'CLAVE_POLICIA'
+    'providers'     => array(
 
-    $police = new PoliceHotel($user,$pass);
+        //...
+        leifermendez\police\PoliceProvider::class,
+
+    ),
+
+```
+
+Add the facade to your `config/app.php` file:
+
+```php
+
+    'aliases'       => array(
+
+        //...
+        'PoliceHotel'  => leifermendez\police\PoliceHotelFacade::class,
+
+    ),
 
 ```
 
@@ -43,61 +58,70 @@ composer require leifermendez/laravel-policia-hotel
 
 ### Lista de países
 
+
 ```php
 
-  use \leifermendez\police\PoliceHotel;
+    use leifermendez\police\PoliceHotelFacade;
+
+    $credentials = array(
+        'user' => 'USER_POLICE',
+        'pass' => 'PASS_POLICE'
+    ); 
+   
     
-    $user = 'USUARIO_POLICA';
-    $pass = 'CLAVE_POLICIA'
+    $response = PoliceHotelFacade::to($credentials)
+                    ->getCountries();
 
-    $police = new PoliceHotel($user,$pass);
 
-    $police->getCountries();    
 ```
 
 
 ### Registrar Huesped
 
 ```php
-  use \leifermendez\police\PoliceHotel;
+
+    use leifermendez\police\PoliceHotelFacade;
+
+    $credentials = array(
+        'user' => 'USER_POLICE',
+        'pass' => 'PASS_POLICE'
+    ); 
+   
+
+    $data_user = [
+        'nombre' => 'LUIS', // Solo caracteres valiso letras
+        'apellido1' => 'RAMIREZ', // Solo caracteres valiso letras
+        'apellido2' => 'LOPEZ', // Solo caracteres valiso letras
+        'nacionalidad' => 'A9430AAAAA',
+        'nacionalidadStr' => 'VIETNAM',
+        'tipoDocumento' => 'P',
+        'tipoDocumentoStr' => 'PASAPORTE',
+        'numIdentificacion' => 'QDQ015771J',
+        'fechaExpedicionDoc' => '27/09/2019',
+        'dia' => '03', //<---- Bod dia nacimiento example 03 (2)
+        'mes' => '03', //<---- Bod mes nacimiento example 03 (2)
+        'ano' => '1999', //<---- Bod dia nacimiento example 1999 (4)
+        'fechaNacimiento' => '03/03/1999',
+        'sexo' => 'M',
+        'sexoStr' => 'MASCULINO',
+        'fechaEntrada' => '27/09/2019',
+    ];
     
-    $user = 'USUARIO_POLICA';
-    $pass = 'CLAVE_POLICIA'
+    $response = PoliceHotelFacade::to($credentials)
+                    ->register($data_user);
 
-    $police = new PoliceHotel($user,$pass);
-
-$data_user = [
-    'nombre' => 'LUIS', // Solo caracteres valiso letras
-    'apellido1' => 'RAMIREZ', // Solo caracteres valiso letras
-    'apellido2' => 'LOPEZ', // Solo caracteres valiso letras
-    'nacionalidad' => 'A9430AAAAA',
-    'nacionalidadStr' => 'VIETNAM',
-    'tipoDocumento' => 'P',//<----Tipo de documentacion
-    'tipoDocumentoStr' => 'PASAPORTE' //<----Tipo de documentacion palabra,
-    'numIdentificacion' => 'QDQ015771J',
-    'fechaExpedicionDoc' => '27/09/2019',
-    'dia' => '03', //<---- Bod dia nacimiento example 03 (2)
-    'mes' => '03', //<---- Bod mes nacimiento example 03 (2)
-    'ano' => '1999', //<---- Bod dia nacimiento example 1999 (4)
-    'fechaNacimiento' => '03/03/1999',
-    'sexo' => 'M',
-    'sexoStr' => 'MASCULINO',
-    'fechaEntrada' => '27/09/2019',
-];
-
-$police->register($data_user);
 
 ```
 
 ### PDF
 
 ```php
-  use \leifermendez\police\PoliceHotel;
-    
-    $user = 'USUARIO_POLICA';
-    $pass = 'CLAVE_POLICIA'
+    use leifermendez\police\PoliceHotelFacade;
 
-    $police = new PoliceHotel($user,$pass);
+    $credentials = array(
+        'user' => 'USER_POLICE',
+        'pass' => 'PASS_POLICE'
+    ); 
 
     $options = [
         'file_path' => 'file_name.pdf', //Ruta donde vas a guardar el PDF
@@ -118,7 +142,8 @@ $police->register($data_user);
         'fechaEntrada' => '03/03/2019', // Fecha entrada al pais
     ];
     
-    $police->pdf($options); 
+    $response = PoliceHotelFacade::to($credentials)
+                        ->pdf($options);
 
 ```
 
