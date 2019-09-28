@@ -8,6 +8,12 @@ class PoliceHotel
 {
     private $endpoint, $cookie, $user, $pass, $_csrf, $headers;
 
+    protected $pkgoptions = array(
+        'countries' => array(),
+        'user' => array(),
+        'pdf' => ''
+    );
+
     public function __construct($user, $pass)
     {
         try {
@@ -21,6 +27,8 @@ class PoliceHotel
             if (!$user or !$pass) {
                 throw new \Exception('error.login.users');
             }
+
+            return $this;
 
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -53,6 +61,7 @@ class PoliceHotel
                 parse_str($item, $cookie);
                 $cookies = array_merge($cookies, $cookie);
             }
+            $parse_cookies = array();
 
             $cookies = array_reverse($cookies);
             foreach ($cookies as $key_cookie => $value_cookie) {
@@ -232,6 +241,9 @@ class PoliceHotel
             fputs($file, $response);
             fclose($file);
 
+            $this->pkgoptions['pdf'] = $downloadPath;
+            return $this->pkgoptions['pdf'];
+
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -347,15 +359,19 @@ class PoliceHotel
             $countries = explode('optionvalue=', $matches_options[1]);
             $new_countries = array();
 
+
             foreach ($countries as $country) {
                 preg_match_all('/[A-Za-z0-9]+/i', $country, $tmp);
-                $new_countries[] = [
-                    'id' => $tmp[0][0],
-                    'name' => $tmp[0][1]
-                ];
+                if($tmp && count($tmp) && (count($tmp[0])>1)){
+                    $new_countries[] = [
+                        'id' => $tmp[0][0],
+                        'name' => $tmp[0][1]
+                    ];
+                }
             }
 
-            return $new_countries;
+            $this->pkgoptions['countries'] = $new_countries;
+            return $this->pkgoptions['countries'];
 
 
         } catch (\Exception $e) {
@@ -416,8 +432,9 @@ class PoliceHotel
                 $this->_csrf = $data['_csrf'];
                 $id_user = $this->getIDuser();
                 $return = array('id_user' => $id_user, 'id_host' => $data['idHospederia']);
-                var_dump($return);
-                return $return;
+
+                $this->pkgoptions['user'] = $return;
+                return $this->pkgoptions['user'];
 
 
             } else {
