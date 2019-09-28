@@ -25,6 +25,63 @@ class PoliceHotel
         }
     }
 
+    private function curl($url = null, $method = 'GET', $data = array(), $headers = array())
+    {
+        try {
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            if ($method === 'POST') curl_setopt($ch, CURLOPT_POST, TRUE);
+            if ($method === 'POST') curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            ob_start();
+
+            $response = curl_exec($ch);
+            $raw_response = $response;
+
+            /** cookies ** */
+
+            preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
+            $cookies = array();
+            foreach ($matches[1] as $item) {
+                parse_str($item, $cookie);
+                $cookies = array_merge($cookies, $cookie);
+            }
+
+            $cookies = array_reverse($cookies);
+            foreach ($cookies as $key_cookie => $value_cookie) {
+                $parse_cookies[] = $key_cookie . '=' . $value_cookie;
+            }
+            $parse_cookies = implode('; ', $parse_cookies);
+
+            $raw_response = str_replace(["\r\n", "\n", " "], "", $raw_response);
+
+            ob_end_clean();
+            curl_close($ch);
+
+            preg_match('/<metaname="_csrf"content="(.{36})"\/>/',
+                $raw_response, $matches, PREG_OFFSET_CAPTURE);
+            if (count($matches)) {
+                $matches = array_reverse($matches);
+            }
+            $matches = array_shift($matches);
+            $csr = $matches[0];
+
+            return array(
+                'content' => $raw_response,
+                'cookies' => $parse_cookies,
+                '_csrf' => $csr
+            );
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     private function home()
     {
 
@@ -111,9 +168,42 @@ class PoliceHotel
 
     }
 
+    private function getID()
+    {
+        try {
+            $headers = array_merge(
+                $this->headers,
+                [
+                    'Cookie: ' . $this->cookie,
+                    'X-CSRF-TOKEN: ' . $this->_csrf,
+                    'X-Requested-With: XMLHttpRequest'
+                ]
+            );
+
+            $response = $this->curl(
+                $this->endpoint . '/hospederia/manual/vista/grabadorManual',
+                'GET',
+                [],
+                $headers
+            );
+
+            $pattern = '/id="idHospederia"type="hidden"value="([^"]+).*>/i';
+
+            $pattern_csrf = '/name="_csrf"value="([^"]+).*>/i';
+
+            preg_match($pattern, $response['content'], $matches);
+            preg_match($pattern_csrf, $response['content'], $matches_csrf);
+
+            return array('id' => $matches[1], '_csrf' => $matches_csrf[1]);
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     private function downloadPdf($path = null)
     {
-        try{
+        try {
             $headers = array_merge(
                 $this->headers,
                 [
@@ -131,7 +221,7 @@ class PoliceHotel
 
             $response = curl_exec($ch);
 
-            if(!$path){
+            if (!$path) {
                 throw new \Exception('error.path.save');
             }
 
@@ -140,12 +230,12 @@ class PoliceHotel
             fputs($file, $response);
             fclose($file);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
     }
 
-    private function login($username = null, $password = null)
+    private function login()
     {
 
         try {
@@ -167,22 +257,14 @@ class PoliceHotel
                 ]
             );
 
-            $login = curl_init();
-            curl_setopt($login, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($login, CURLOPT_URL, $this->endpoint . '/execute_login');
-            curl_setopt($login, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($login, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($login, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($login, CURLOPT_POST, TRUE);
-            curl_setopt($login, CURLOPT_POSTFIELDS, http_build_query($data));
-            ob_start();
-            $response = curl_exec($login);
-            ob_end_clean();
-            curl_close($login);
+            $curl_response = $this->curl(
+                $this->endpoint . '/execute_login',
+                'POST',
+                $data,
+                $headers
+            );
 
-            $response = str_replace(["\r\n", "\n", " "], "", $response);
-
-            if (strpos($response, '/e-hotel/inicio') !== false) {
+            if (strpos($curl_response['content'], '/e-hotel/inicio') !== false) {
                 $this->cookie = $data_csr['cookie'];
                 $response_home = $this->home();
 
@@ -197,19 +279,106 @@ class PoliceHotel
 
     }
 
-    /** FUNCIONES PUBLICAS* */
-
-    public function register($data_extra = [])
+    private function getIDuser()
     {
         try {
 
+            $headers = array_merge(
+                $this->headers,
+                [
+                    'Cookie: ' . $this->cookie,
+                    'X-CSRF-TOKEN: ' . $this->_csrf,
+                    'X-Requested-With: XMLHttpRequest'
+                ]
+            );
+
+
+            $response = $this->curl(
+                $this->endpoint . '/hospederia/manual/vista/parteViajero',
+                'GET',
+                [],
+                $headers
+            );
+
+            preg_match_all('/name="idHuesped\"(.*)value=\"(.*?)\"/i', $response['content'], $id);
+            $id = array_reverse($id);
+            $id = $id[0][0];
+
+            return $id;
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /** FUNCIONES PUBLICAS* */
+
+    public function getCountries()
+    {
+        try {
+            $this->login();
+
+            $headers = array_merge(
+                $this->headers,
+                [
+                    'Cookie: ' . $this->cookie,
+                    'X-CSRF-TOKEN: ' . $this->_csrf,
+                    'X-Requested-With: XMLHttpRequest'
+                ]
+            );
+
+            $response = $this->curl(
+                $this->endpoint . '/hospederia/manual/vista/grabadorManual',
+                'GET',
+                [],
+                $headers
+            );
+
+            $pattern = '/<selectid="nacionalidad"(.*?)<\/select>/i';
+            $pattern_options = '@<optionvalue=\"(.*)\">(.*)</option>@';
+
+            preg_match($pattern, $response['content'], $matches);
+            $raw_countries = $matches[1];
+
+            preg_match($pattern_options, $raw_countries, $matches_options);
+
+            $countries = explode('optionvalue=', $matches_options[1]);
+            $new_countries = array();
+
+            foreach ($countries as $country) {
+                preg_match_all('/[A-Za-z0-9]+/i', $country, $tmp);
+                $new_countries[] = [
+                    'id' => $tmp[0][0],
+                    'name' => $tmp[0][1]
+                ];
+            }
+
+            return $new_countries;
+
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function register($data_extra)
+    {
+        try {
+            $this->login();
+
+            if (!$data_extra['nacionalidad']) {
+                throw new \Exception('error.nacionalidad.null');
+            }
+
+            $response = $this->getID();
+
             $data = [
                 'jsonHiddenComunes' => '',
-                'idHospederia' => '',
+                'idHospederia' => $response['id'],
                 'nombre' => '',
                 'apellido1' => '',
                 'apellido2' => '',
-                'nacionalidad' => 'A9109AAAAA',
+                'nacionalidad' => '',
                 'nacionalidadStr' => '',
                 'tipoDocumento' => '',
                 'tipoDocumentoStr' => '',
@@ -222,37 +391,46 @@ class PoliceHotel
                 'sexo' => 'M',
                 'sexoStr' => 'MASCULINO',
                 'fechaEntrada' => '27/09/2019',
-                '_csrf' => ''
+                '_csrf' => $response['_csrf']
             ];
 
             $data = array_merge($data, $data_extra);
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_URL, $this->endpoint . '/hospederia/manual/insertar/huesped');
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-            ob_start();
-            $response = curl_exec($ch);
-            ob_end_clean();
-            curl_close($ch);
+            $headers = array_merge(
+                $this->headers,
+                [
+                    'Cookie: ' . $this->cookie
+                ]
+            );
 
-            return $response;
+            $response = $this->curl(
+                $this->endpoint . '/hospederia/manual/insertar/huesped',
+                'POST',
+                $data,
+                $headers
+            );
+
+            if (strpos($response['content'], '/vista/parteViajero') !== false) {
+                $this->_csrf = $data['_csrf'];
+                $id_user = $this->getIDuser();
+                return $id_user;
+
+
+            } else {
+                throw new \Exception('error.vista.parte.vaiajero');
+            }
 
         } catch (\Exception $e) {
             return $e->getMessage();
         }
     }
 
-    public function pdf($file_path)
+    public function pdf($options)
     {
 
         try {
 
-            $this->login($this->user, $this->pass);
+            $this->login();
 
             $headers = array_merge(
                 $this->headers,
@@ -263,9 +441,11 @@ class PoliceHotel
                 ]
             );
 
+            $data = $options['data'];
+
             $host = [
-                "idHuesped" => 0,
-                "idHospederia" => 33615,
+                "idHuesped" => $options['id_user'],
+                "idHospederia" => $options['id_host'],
                 "idAgrupacion" => 0,
                 "codigoMetadata" => 0,
                 "sexo" => "M",
@@ -300,8 +480,10 @@ class PoliceHotel
                 "ano" => "1999"
             ];
 
+            $host = array_merge($host,$data);
+
             $data = [
-                'idHuesped' => 228613412,
+                'idHuesped' => $options['id_user'],
                 'huespedJson' => json_encode($host)
             ];
 
@@ -322,7 +504,7 @@ class PoliceHotel
             $response = str_replace(["\r\n", "\n", " "], "", $response);
 
             if (strpos($response, '/e-hotel/previsualizacionPdf') !== false) {
-                if($file_path) $this->downloadPdf($file_path);
+                if ($options['$file_path']) $this->downloadPdf($options['$file_path']);
             } else {
                 throw new \Exception('error.pdf.link');
             }
