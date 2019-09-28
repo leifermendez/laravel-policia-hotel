@@ -2,6 +2,8 @@
 
 namespace leifermendez\police;
 
+use DateTime;
+
 class PoliceHotel
 {
     private $endpoint, $cookie, $user, $pass, $_csrf, $headers;
@@ -413,7 +415,9 @@ class PoliceHotel
             if (strpos($response['content'], '/vista/parteViajero') !== false) {
                 $this->_csrf = $data['_csrf'];
                 $id_user = $this->getIDuser();
-                return $id_user;
+                $return = array('id_user' => $id_user, 'id_host' => $data['idHospederia']);
+                var_dump($return);
+                return $return;
 
 
             } else {
@@ -441,46 +445,53 @@ class PoliceHotel
                 ]
             );
 
-            $data = $options['data'];
+
+            $bod_source = $options['fechaNacimiento'];
+            $bod = new DateTime($bod_source);
+
+            $issue_date = $options['fechaExpedicionDoc'];
+            $enter_date = $options['fechaEntrada'];
+
+            $date_issue = new DateTime($issue_date);
+            $date_enter = new DateTime($enter_date);
+
 
             $host = [
                 "idHuesped" => $options['id_user'],
                 "idHospederia" => $options['id_host'],
                 "idAgrupacion" => 0,
                 "codigoMetadata" => 0,
-                "sexo" => "M",
-                "nacionalidad" => "A9109AAAAA",
-                "nacionalidadStr" => "ESPAÑA",
+                "sexo" => $options['sexo'],
+                "nacionalidad" => $options['nacionalidad'],
+                "nacionalidadStr" => $options['nacionalidadStr'],
                 "persona" => [
-                    "nombre" => "ROBERTO",
-                    "apellido1" => "RAMIREZ",
-                    "apellido2" => "LOPEZ",
-                    "fechaNacimiento" => "03/03/1999",
-                    "anoNacimiento" => "1999",
-                    "sexo" => "M",
+                    "nombre" => $options['nombre'],
+                    "apellido1" => $options['apellido1'],
+                    "apellido2" => $options['apellido2'],
+                    "fechaNacimiento" => $bod->format('d/m/Y'), //03/03/1999
+                    "anoNacimiento" => $bod->format('Y'),
+                    "sexo" => $options['sexo'],
                     "datoMigrado" => false,
                     "documento" => [
-                        "numIdentificacion" => "TEP758880F",
-                        "tipoDocumento" => "P",
-                        "tipoDocumentoStr" => "PASAPORTE",
+                        "numIdentificacion" => $options['numIdentificacion'],
+                        "tipoDocumento" => $options['tipoDocumento'],
+                        "tipoDocumentoStr" => $options['tipoDocumentoStr'],
                         "datoMigrado" => false,
                         "controlado" => false
                     ],
                     "esArrendatario" => false,
                     "esConductor" => false,
-                    "nacionalidad" => "A9109AAAAA",
-                    "ano" => "1999"
+                    "nacionalidad" => $options['nacionalidad'],
+                    "ano" => $bod->format('Y')
                 ],
-                "fechaEntrada" => "27/09/2019",
-                "fechaExpedicionDoc" => "27/09/2019",
-                "sexoStr" => "MASCULINO",
-                "fechaNacimVchar" => "19990303",
-                "dia" => "03",
-                "mes" => "03",
-                "ano" => "1999"
+                "fechaEntrada" => $date_enter->format('d/m/Y'),
+                "fechaExpedicionDoc" => $date_issue->format('d/m/Y'),
+                "sexoStr" => $options['sexoStr'],
+                "fechaNacimVchar" => $bod->format('Ymd'), //19990303
+                "dia" => $bod->format('d'),
+                "mes" => $bod->format('m'),
+                "ano" => $bod->format('Y')
             ];
-
-            $host = array_merge($host,$data);
 
             $data = [
                 'idHuesped' => $options['id_user'],
@@ -488,23 +499,18 @@ class PoliceHotel
             ];
 
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_URL, $this->endpoint . '/hospederia/generarParteHuesped');
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-            ob_start();
-            $response = curl_exec($ch);
-            ob_end_clean();
-            curl_close($ch);
+            $curl_response = $this->curl(
+                $this->endpoint . '/hospederia/generarParteHuesped',
+                'POST',
+                $data,
+                $headers
+            );
 
-            $response = str_replace(["\r\n", "\n", " "], "", $response);
+            $response = $curl_response['content'];
 
             if (strpos($response, '/e-hotel/previsualizacionPdf') !== false) {
-                if ($options['$file_path']) $this->downloadPdf($options['$file_path']);
+
+                if ($options['file_path']) $this->downloadPdf($options['file_path']);
             } else {
                 throw new \Exception('error.pdf.link');
             }
