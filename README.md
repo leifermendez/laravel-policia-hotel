@@ -1,5 +1,9 @@
 # Laravel parte policia Webpol 
 
+Libreria WebPol Hotel para Laravel 4 or 5 framework - desarrollado por [Leifer](https://leifermendez.github.io).
+
+ > Ten en cuenta que para poder hacer uso de la librería deberás contar con las credenciales del sistema webpol las cuales solo puedes obtener de forma presencial en una comisaria.
+ > https://webpol.policia.es/e-hotel/
 ### Instalar
 
 
