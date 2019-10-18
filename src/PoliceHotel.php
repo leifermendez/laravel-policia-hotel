@@ -4,7 +4,6 @@ namespace leifermendez\police;
 
 use DateTime;
 
-use FPDF;
 use setasign\Fpdi\Fpdi;
 
 class PoliceHotel

@@ -12,7 +12,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "setasign/fpdf": "1.8.1",
-        "setasign/fpdi": "^2.2"
+        "setasign/fpdi-fpdf": "^2.2"
     },
     "autoload": {
         "psr-4": {

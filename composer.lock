@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "01746f7e34dffaea00f6084e6b2927d5",
+    "content-hash": "9d7a4a3dc3b3965dcd1cb906fe175690",
     "packages": [
         {
             "name": "anlutro/curl",
@@ -145,6 +145,45 @@
                 "pdf"
             ],
             "time": "2019-01-30T14:11:19+00:00"
+        },
+        {
+            "name": "setasign/fpdi-fpdf",
+            "version": "v2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Setasign/FPDI-FPDF.git",
+                "reference": "e4363ac09e1b766b38ebea1c3cbe82b3480a11e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Setasign/FPDI-FPDF/zipball/e4363ac09e1b766b38ebea1c3cbe82b3480a11e9",
+                "reference": "e4363ac09e1b766b38ebea1c3cbe82b3480a11e9",
+                "shasum": ""
+            },
+            "require": {
+                "setasign/fpdf": "^1.8",
+                "setasign/fpdi": "^2.2"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Slabon",
+                    "email": "jan.slabon@setasign.com",
+                    "homepage": "https://www.setasign.com"
+                }
+            ],
+            "description": "Kind of metadata package for dependencies of the latest versions of FPDI and FPDF.",
+            "homepage": "https://www.setasign.com/fpdi",
+            "keywords": [
+                "fpdf",
+                "fpdi",
+                "pdf"
+            ],
+            "time": "2019-01-30T14:38:19+00:00"
         }
     ],
     "packages-dev": [],
