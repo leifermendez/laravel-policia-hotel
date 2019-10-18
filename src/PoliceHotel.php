@@ -552,7 +552,7 @@ class PoliceHotel
             $pdf->setSourceFile($file);
             $template = $pdf->importPage(1);
             $size = $pdf->getTemplateSize($template);
-            $pdf->useTemplate($template, null, null, $size['w'], $size['h'], true);
+            $pdf->useTemplate($template, null, null, $size[0], $size[1], true);
             $pdf->Image($signature, 77, 123, 50, 30);
             $pdf->Output($output, "F");
             return $output;
