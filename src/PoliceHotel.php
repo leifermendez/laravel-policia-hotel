@@ -543,9 +543,16 @@ class PoliceHotel
         }
     }
 
-    public function signaturePDF($file, $output, $signature = null)
+    public function signaturePDF($file, $output, $signature = null, $date = null, $location = '')
     {
         try {
+
+            $today = ($date) ? new DateTime($date) : new DateTime();
+            $data = array(
+                'y' => $today->format('y'),
+                'F' => $today->format('F'),
+                'd' => $today->format('d'),
+            );
 
             $pdf = new Fpdi();
             $pdf->AddPage();
@@ -553,10 +560,22 @@ class PoliceHotel
             $template = $pdf->importPage(1);
             $size = $pdf->getTemplateSize($template);
             $pdf->useTemplate($template, null, null, $size[0], $size[1], true);
+            $pdf->SetFont('Arial');
+            $pdf->SetFontSize(7);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->SetXY(62, 125);
+            $pdf->Write(0, $location);
+            $pdf->SetXY(86.5, 125);
+            $pdf->Write(0, $data['d']);
+            $pdf->SetXY(97, 125);
+            $pdf->Write(0, $data['F']);
+            $pdf->SetXY(125, 125);
+            $pdf->Write(0, $data['y']);
             $pdf->Image($signature, 77, 123, 50, 30);
             $pdf->Output($output, "F");
             return $output;
-        } catch (\Exception $e) {
+        } catch
+        (\Exception $e) {
             return $e->getMessage();
         }
     }

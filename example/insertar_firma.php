@@ -9,6 +9,6 @@ $salida = __DIR__ . '/DUMMY_SIGNATURE.pdf';
 $firma = __DIR__ . '/EJEMPLO_FIRMA.png';
 
 $police = new PoliceHotel('USER_POLICE', 'PASS_POLICE');
-$res = $police->signaturePDF($pdf, $salida, $firma);
+$res = $police->signaturePDF($pdf, $salida, $firma,null,'BARCELONA');
 
 var_dump($res);
