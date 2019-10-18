@@ -10,7 +10,9 @@
     "require": {
         "anlutro/curl": "^1.4",
         "ext-curl": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "setasign/fpdf": "1.8.1",
+        "setasign/fpdi": "^2.2"
     },
     "autoload": {
         "psr-4": {

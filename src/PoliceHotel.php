@@ -4,9 +4,12 @@ namespace leifermendez\police;
 
 use DateTime;
 
+use FPDF;
+use setasign\Fpdi\Fpdi;
+
 class PoliceHotel
 {
-    private $endpoint, $cookie, $user, $pass, $_csrf, $headers;
+    private $endpoint, $cookie, $user, $pass, $_csrf, $headers, $fpdi;
 
     protected $pkgoptions = array(
         'countries' => array(),
@@ -17,6 +20,7 @@ class PoliceHotel
     public function __construct($user, $pass)
     {
         try {
+
             $this->user = $user;
             $this->pass = $pass;
             $this->endpoint = 'https://webpol.policia.es/e-hotel';
@@ -536,6 +540,24 @@ class PoliceHotel
                 'file' => $options['file_path']
             );
 
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function signaturePDF($file, $output, $signature = null)
+    {
+        try {
+
+            $pdf = new Fpdi();
+            $pdf->AddPage();
+            $pdf->setSourceFile($file);
+            $template = $pdf->importPage(1);
+            $size = $pdf->getTemplateSize($template);
+            $pdf->useTemplate($template, null, null, $size['w'], $size['h'], true);
+            $pdf->Image($signature, 77, 123, 50, 30);
+            $pdf->Output($output, "F");
+            return $output;
         } catch (\Exception $e) {
             return $e->getMessage();
         }
