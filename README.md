@@ -2,12 +2,23 @@
 
 Libreria WebPol Hotel para Laravel 4 or 5 framework - desarrollado por [Leifer](https://leifermendez.github.io).
 
- > Ten en cuenta que para poder hacer uso de la librería deberás contar con las credenciales del sistema webpol las cuales solo puedes obtener de forma presencial en una comisaria.
+ > __¡IMPORTANTE!__,  Ten en cuenta que para poder hacer uso de la librería deberás contar con las credenciales del sistema webpol las cuales únicamente puedes obtener de forma presencial en una comisaria de policia.
  > https://webpol.policia.es/e-hotel/
 
-![Firma](https://github.com/leifermendez/laravel-policia-hotel/blob/master/example/firma.png?raw=true)
+ > __NO OFICIAL__, La siguiente librería no tiene ningún respaldo oficial, es desarrollada con el propósito de ayudar a la comunidad que desarrolla sistemas relacionados con el mundo hotelero y turístico en España. [Ver màs](#parte_polcial)
 
-![PDF](https://github.com/leifermendez/laravel-policia-hotel/blob/master/example/vista_previa.png?raw=true)
+![PDF_GIF](https://github.com/leifermendez/laravel-policia-hotel/blob/master/example/documentation/vista_previa.gif?raw=true)
+![PDF](https://github.com/leifermendez/laravel-policia-hotel/blob/master/example/documentation/vista_previa.png?raw=true)
+
+### Funciones
+
+ > 1. [Registro de huésped](#registrar_huesped)
+ > 2. [Obtener PDF](#obtener_pdf)
+ > 2. [Lista países disponibles](#lista_paises)
+
+ > Nuevo:
+ > 1. [Firmar PDF](#firmar_pdf)
+
 
 ### Instalar
 
@@ -23,6 +34,7 @@ composer require leifermendez/laravel-policia-hotel
 |-----------------------|-------------------|-------------------------------------------------------------------|
 | getCountries()         |  array       | Obtener los paises disponibles para el registro de usuario                |
 | register($data)       |  id            | Registrar un huesped en la policia                     |
+| signaturePDF($pdf, $salida, $firma,null,'MADRID')       |  array            | Firmar PDF                   |
 | pdf($options)       |  file            | Obtener PDF de alta de parte                                  |
 
 
@@ -65,7 +77,7 @@ Add the facade to your `config/app.php` file:
 
 
 
-### Lista de países
+###<a name="lista_paises"></a> Lista de países
 
 
 ```php
@@ -85,7 +97,7 @@ Add the facade to your `config/app.php` file:
 ```
 
 
-### Registrar Huesped
+###<a name="registrar_huesped"></a>  Registrar Huesped
 
 ```php
 
@@ -122,7 +134,7 @@ Add the facade to your `config/app.php` file:
 
 ```
 
-### PDF
+###<a name="obtener_pdf"></a> Obtener PDF
 
 ```php
     use leifermendez\police\PoliceHotelFacade;
@@ -156,6 +168,32 @@ Add the facade to your `config/app.php` file:
 
 ```
 
+###<a name="firmar_pdf"></a> Firmar PDF
+
+![Firma](https://github.com/leifermendez/laravel-policia-hotel/blob/master/example/documentation/firma.png?raw=true)
+
+```php
+    use leifermendez\police\PoliceHotelFacade;
+
+    $credentials = array(
+        'user' => 'USER_POLICE',
+        'pass' => 'PASS_POLICE'
+    ); 
+    
+    $pdf = __DIR__ . '/DUMMY.pdf'; // Ruta del PDF obtenido Ver paso (Obtener PDF)
+    $salida = __DIR__ . '/DUMMY_SIGNATURE.pdf'; //Ruta donde quieres guardar el nuevo PDF firmado
+    $firma = __DIR__ . '/resources/FIRMA_1.png'; // Firma en PNG (Archivo de imagen PNG)
+
+    $response = PoliceHotelFacade::to($credentials)
+                        ->signaturePDF($pdf, $salida, $firma,null,'MADRID');
+
+```
+
 El registro de viajeros en el sistema Webpol  o E-Hotel de la Policía se ha convertido ya en una actividad rutinaria para propietarios y gestores de alojamientos turísticos. La Ley Orgánica de Protección de la Seguridad Ciudadana del 30 de marzo de 2015 regula esta actividad y exige una serie de requisitos indispensables para cumplir con la legalidad.
 
- [Ver portafolio](https://leifermendez.github.io)
+
+###<a name="parte_polcial"></a> ¿Que es un parte policial?
+El propietario o gestor deberá recoger los datos de identificación de todos los viajeros mayores de 16 años que se alojen en una vivienda turística, ajustándose al modelo de cada cuerpo de seguridad, o que recoja por lo menos el modelo del Ministerio de Interior.
+[Ver más](http://www.interior.gob.es/web/servicios-al-ciudadano/seguridad/libro-registro-de-viajeros/comunicacion-de-datos-a-las-dependencias-policial)
+
+[Ver portafolio](https://leifermendez.github.io)
