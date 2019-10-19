@@ -97,7 +97,7 @@ Add the facade to your `config/app.php` file:
 ```
 
 
-###<a name="registrar_huesped"></a>  Registrar Huesped
+### <a name="registrar_huesped"></a>  Registrar Huesped
 
 ```php
 
@@ -134,7 +134,7 @@ Add the facade to your `config/app.php` file:
 
 ```
 
-###<a name="obtener_pdf"></a> Obtener PDF
+### <a name="obtener_pdf"></a> Obtener PDF
 
 ```php
     use leifermendez\police\PoliceHotelFacade;
@@ -168,7 +168,7 @@ Add the facade to your `config/app.php` file:
 
 ```
 
-###<a name="firmar_pdf"></a> Firmar PDF
+### <a name="firmar_pdf"></a> Firmar PDF
 
 ![Firma](https://github.com/leifermendez/laravel-policia-hotel/blob/master/example/documentation/firma.png?raw=true)
 
@@ -192,7 +192,7 @@ Add the facade to your `config/app.php` file:
 El registro de viajeros en el sistema Webpol  o E-Hotel de la Policía se ha convertido ya en una actividad rutinaria para propietarios y gestores de alojamientos turísticos. La Ley Orgánica de Protección de la Seguridad Ciudadana del 30 de marzo de 2015 regula esta actividad y exige una serie de requisitos indispensables para cumplir con la legalidad.
 
 
-###<a name="parte_polcial"></a> ¿Que es un parte policial?
+### <a name="parte_polcial"></a> ¿Que es un parte policial?
 El propietario o gestor deberá recoger los datos de identificación de todos los viajeros mayores de 16 años que se alojen en una vivienda turística, ajustándose al modelo de cada cuerpo de seguridad, o que recoja por lo menos el modelo del Ministerio de Interior.
 [Ver más](http://www.interior.gob.es/web/servicios-al-ciudadano/seguridad/libro-registro-de-viajeros/comunicacion-de-datos-a-las-dependencias-policial)
 
