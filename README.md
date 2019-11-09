@@ -70,7 +70,8 @@ Add the facade to your `config/app.php` file:
 
 | TIPO                    | PALABRA                                                       |
 |-------------------------|-------------------------------------------------------------------|
-| P            | PASAPORTE               
+| P            | PASAPORTE   
+| D            | DNI   
 | I      |  CARTA DE IDENTIDAD EXTRANJERA                              
 | N        |  NIE O TARJETA ESPAÑOLA DE EXTRANJEROS                                           
 | X| PERMISO DE RESIDENCIA DE ESTADO MIEMBRO DE LA UE|
